@@ -1,0 +1,6 @@
+rum:
+  host: 127.0.0.1 #
+  port: 1799 # 节点与网络-> 节点参数 -> 端口
+  cert.file: path\to\rum-app\resources\quorum_bin\certs\server.crt # rum安装目录下的文件 rum-app\resources\quorum_bin\certs\server.crt
+  post.group.id: valid-post-rum-group-id # 群组详情 -> ID  分享tomato的群组
+  read.group.id: valid-read-rum-group-id # 群组详情 -> ID  读取信息的群组

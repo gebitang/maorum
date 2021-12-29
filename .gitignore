@@ -1,0 +1,18 @@
+*.iml
+.idea/
+.github
+# MacOS extended attributes
+._*
+# MacOS Desktop Services Store
+.DS_Store
+
+# Eclipse artifacts
+.project
+
+# Visual Studio Code
+.vscode/
+
+rum.db
+config/config.json
+config/rum.yml
+data/
