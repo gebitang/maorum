@@ -145,7 +145,11 @@ func (bs *Bubbles) DataRange() (xmin, xmax, ymin, ymax float64) {
 	// the XYRange function from the plotter package to
 	// compute the minimum and maximum X and Y values.
 	xm, xmax, ym, ymax := plotter.XYRange(XYValues{bs.XYZs})
-	return xm - 20, xmax, ym, ymax + 30
+	startx := xm - 20
+	if startx < 0 {
+		startx = 0
+	}
+	return startx, xmax, ym, ymax + 30
 }
 
 func (bs *Bubbles) Thumbnail(c *draw.Canvas) {
