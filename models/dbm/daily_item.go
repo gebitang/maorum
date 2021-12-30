@@ -10,7 +10,7 @@ type (
 		ID        int `json:"id"`
 		ItemType  int
 		ItemComm  string
-		CreatedAt int `json:"createdAt" gorm:"autoUpdateTime:milli"`
+		CreatedAt int `json:"createdAt"` // gorm:"autoUpdateTime:milli"
 		Min       int
 		Comment   string
 		UpdatedAt time.Time `json:"updatedAt"`

@@ -220,7 +220,9 @@ func matchMaoRum(data string) bool {
 }
 
 func isDailyItem(c string) (bool, *dbm.DailyItem) {
-	d := &dbm.DailyItem{}
+	d := &dbm.DailyItem{
+		CreatedAt: int(toMillisecond(time.Now())),
+	}
 	// -D25,abcd
 	if len(c) > 2 {
 		it := c[:2]
@@ -238,13 +240,49 @@ func isDailyItem(c string) (bool, *dbm.DailyItem) {
 			}
 			min, err := strconv.Atoi(m)
 			if err != nil {
-				return false, d
+				return false, nil
 			}
 			d.Min = min
 			return true, d
 		}
 	}
-	return false, d
+	return false, nil
+}
+
+// -D,2021-12-28 18:58,30,comment
+//-D,2021-12-28 18:58,30
+func isDefinedFormat(data string) (bool, *dbm.DailyItem) {
+	d := &dbm.DailyItem{}
+	if len(data) > 20 && strings.Contains(data, ",") && len(strings.Split(data, ",")) > 2 {
+		group := strings.Split(data, ",")
+		// type
+		it := strings.TrimSpace(group[0])
+		if !matchMaoRum(it) {
+			return false, nil
+		}
+		// time
+		t, err := time.Parse(DefineTimeFormat, strings.TrimSpace(group[1]))
+		if err != nil {
+			return false, nil
+		}
+		// min
+		min, err := strconv.Atoi(strings.TrimSpace(group[2]))
+		if err != nil {
+			return false, nil
+		}
+		d.ItemType = bubble.ItemMap[it].Type
+		d.ItemComm = it
+		d.CreatedAt = int(toMillisecond(t))
+		d.Min = min
+
+		// comment
+		if len(group) > 3 {
+			d.Comment = strings.TrimSpace(group[3])
+		}
+		return true, d
+
+	}
+	return false, nil
 }
 
 func todayStart(now time.Time) int {

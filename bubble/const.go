@@ -65,7 +65,7 @@ func init() {
 	w := &TypeItem{
 		Type:        Working,
 		Name:        "工作",
-		CommandName: "-W",
+		CommandName: "-G",
 		HexColor:    "#8a7e94",
 		ColorName:   "Mamba鳩羽紫",
 	}

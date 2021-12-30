@@ -8,15 +8,18 @@ import (
 	"gebitang.com/maorum/bubble"
 	"gebitang.com/maorum/config"
 	"gebitang.com/maorum/models"
+	"gebitang.com/maorum/models/dbm"
 	"github.com/MixinNetwork/bot-api-go-client"
 	"log"
 	"net/http"
 )
 
 const (
-	TimeFormat = "2006-01-02 15:04:05"
-	cnbAssetId = "965e5c6e-434c-3fa9-b780-c50f43cd955c"
-	helpMsg    = "\n1. 支持用户查询，请发送 user_id | identity_number\n  2. 支持资产查询，请发送 asset_id | symbol\n  3. 支持每日领取 1cnb，请发送 /claim 或点击签到\n  4. 支持打赏，请发送 /donate 或点击打赏"
+	Debug            = false
+	TimeFormat       = "2006-01-02 15:04:05"
+	DefineTimeFormat = "2006-01-02 15:04"
+	cnbAssetId       = "965e5c6e-434c-3fa9-b780-c50f43cd955c"
+	helpMsg          = "\n1. 支持用户查询，请发送 user_id | identity_number\n  2. 支持资产查询，请发送 asset_id | symbol\n  3. 支持每日领取 1cnb，请发送 /claim 或点击签到\n  4. 支持打赏，请发送 /donate 或点击打赏"
 )
 
 var (
@@ -71,8 +74,10 @@ func NewClient(ctx context.Context, config *config.Config, client *bot.BlazeClie
 }
 
 func Handler(ctx context.Context, botMsg bot.MessageView, clientID string) error {
-	marshal, _ := json.MarshalIndent(botMsg, "", "  ")
-	fmt.Println("msg data: ", string(marshal))
+	if Debug {
+		marshal, _ := json.MarshalIndent(botMsg, "", "  ")
+		fmt.Println("msg data: ", string(marshal))
+	}
 	decodeBytes, _ := base64.StdEncoding.DecodeString(botMsg.Data)
 
 	if botMsg.Category == bot.MessageCategorySystemAccountSnapshot {
@@ -130,12 +135,20 @@ func Handler(ctx context.Context, botMsg bot.MessageView, clientID string) error
 
 	b, d := isDailyItem(data)
 	if b {
-		err := models.DailyItemStore.Create(ctx, d)
-		if err != nil {
-			fmt.Println("create item err ", err)
-			return err
+		if d.Min > 120 {
+			mars.sendTextMsg(ctx, botMsg.UserId, "时长最长120分钟，注意休息。")
+			return nil
 		}
-		mars.sendTextMsg(ctx, botMsg.UserId, fmt.Sprintf("恭喜完成%s%d分钟", bubble.ItemMap[d.ItemComm].Name, d.Min))
+		addOneItem(ctx, botMsg.UserId, d, mars)
+		return nil
+	}
+
+	if b, d = isDefinedFormat(data); b {
+		if d.Min > 120 {
+			mars.sendTextMsg(ctx, botMsg.UserId, "时长最长120分钟，注意休息。")
+			return nil
+		}
+		addOneItem(ctx, botMsg.UserId, d, mars)
 		return nil
 	}
 
@@ -143,6 +156,15 @@ func Handler(ctx context.Context, botMsg bot.MessageView, clientID string) error
 	mars.sendTextMsg(ctx, botMsg.UserId, "To Be Continued...")
 
 	return nil
+}
+
+func addOneItem(ctx context.Context, userId string, d *dbm.DailyItem, c *TrainClient) {
+	err := models.DailyItemStore.Create(ctx, d)
+	if err != nil {
+		fmt.Println("create item err ", err)
+		return
+	}
+	c.sendTextMsg(ctx, userId, fmt.Sprintf("恭喜完成%s%d分钟", bubble.ItemMap[d.ItemComm].Name, d.Min))
 }
 
 func botDemo(ctx context.Context, botMsg bot.MessageView, data string) error {
