@@ -51,9 +51,17 @@ func (t *TrainClient) readLatestRum(ctx context.Context, userId, content string)
 	for _, c := range g {
 		fmt.Println("------------------", c.Publisher, time.Unix(0, c.TimeStamp).Format(TimeFormat), c.TrxId, c.TypeUrl)
 		t.sendTextMsg(ctx, userId, c.Content.Content)
-		for _, img := range c.Content.Image {
+		for i, img := range c.Content.Image {
 			decodeString, _ := base64.StdEncoding.DecodeString(img.Content)
-			t.sendPlainImage(ctx, userId, img.MediaType, decodeString, 500, 300)
+			if Debug {
+				fmt.Println(i, " imgInfo ", img.MediaType, img.Name, "imgStr=", len(img.Content), " imgBye=", len(decodeString))
+			}
+			if len(decodeString) > 1024*100 {
+				t.sendTextMsg(ctx, userId, "图片太大，请到Rum群组中查看")
+			} else {
+				t.sendPlainImage(ctx, userId, img.MediaType, decodeString, 500, 300)
+			}
+
 		}
 	}
 }

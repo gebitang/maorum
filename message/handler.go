@@ -56,7 +56,9 @@ func (f MixinBlazeHandler) OnAckReceipt(ctx context.Context, msg bot.MessageView
 	if err != nil {
 		return err
 	}
-	log.Println("ack Message...", string(indent))
+	if Debug {
+		log.Println("ack Message...", string(indent))
+	}
 	return nil
 }
 
