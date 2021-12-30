@@ -16,3 +16,4 @@ rum.db
 config/config.json
 config/rum.yml
 data/
+maorum*

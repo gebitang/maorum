@@ -9,7 +9,7 @@
 - 创建mixin机器人，[创建说明](https://prsdigg.com/articles/4bb154a0-30b7-478d-88ea-8d5d68a1bafd)
 - 将私钥文件命名为`config.json`报错在`config`目录下
 - 同目录下保持`rum.yml`文件，内容如下
-- 下载编译好的文件直接启动，或下载[本仓库]()后只需`go run main.go`
+- 下载编译好的文件直接启动，或下载本仓库后执行`go run main.go`
 
 ```yaml
 rum:
