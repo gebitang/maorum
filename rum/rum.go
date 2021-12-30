@@ -74,7 +74,7 @@ func createPayload(img []byte, content string) Payload {
 	return Payload{
 		Type: "Add",
 		Target: Target{
-			Id:   "33f31a11-9e3a-4d96-8737-ab68ffe866d6", //
+			Id:   config.RumPostGroup,
 			Type: "Group",
 		},
 		Object: obj,

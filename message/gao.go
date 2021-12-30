@@ -49,7 +49,10 @@ func (t *TrainClient) readLatestRum(ctx context.Context, userId, content string)
 	g := make([]rum.ContentItem, 0)
 	json.Unmarshal([]byte(s), &g)
 	for _, c := range g {
-		fmt.Println("------------------", c.Publisher, time.Unix(0, c.TimeStamp).Format(TimeFormat), c.TrxId, c.TypeUrl)
+		if Debug {
+			fmt.Println("------------------", c.Publisher, time.Unix(0, c.TimeStamp).Format(TimeFormat), c.TrxId, c.TypeUrl)
+		}
+
 		t.sendTextMsg(ctx, userId, c.Content.Content)
 		for i, img := range c.Content.Image {
 			decodeString, _ := base64.StdEncoding.DecodeString(img.Content)
