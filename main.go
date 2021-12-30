@@ -2,11 +2,16 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"gebitang.com/maorum/config"
 	"gebitang.com/maorum/message"
 	"github.com/MixinNetwork/bot-api-go-client"
 	"log"
 	"time"
+)
+
+var (
+	ReleaseVersion string
 )
 
 func mixinBot() {
@@ -20,12 +25,12 @@ func mixinBot() {
 		}
 	}
 }
-
 func init() {
 	var cstZone = time.FixedZone("CST", 8*3600) // East 8 District
 	time.Local = cstZone
 }
 
 func main() {
+	fmt.Println("Welcome to MaoRum", ReleaseVersion)
 	mixinBot()
 }
